@@ -49,10 +49,6 @@ public class Grafo {    //Grafo dirigido y con peso
             return;
         }
 
-        /*String metodo="addArista";
-         if (!isVerticeValido(a, metodo) || !isVerticeValido(b, metodo))
-         return;     //No existe el vertice u o el vertice v.
-         */
         int pos = -1;
         for (int i = 0; i <= n; i++) {
             if (Ciudades[i].equals(a)) {
@@ -94,13 +90,12 @@ public class Grafo {    //Grafo dirigido y con peso
         V[u].bloquearOdesbloquear(camino, true);
     }
 
-    public double distancia(String a, String b) {
-        int x = posicion(a);
-        int y = posicion(b);
+    public double distancia(int x, int y, String camino) {
         if (!isVerticeValido(x) || !isVerticeValido(y)) {
             return 0;
         }
-        return V[x].getDistancia(b);
+        String ciudad = devolver_nombre_ciudad(y);
+        return V[x].getDistancia(ciudad, camino);
     }
 
     public String camino(String a, String b) {
@@ -276,33 +271,96 @@ public class Grafo {    //Grafo dirigido y con peso
         return ver;
     }
 
-    public double menordistancia(String a, String z) {
-        if (!existeCamino(a, z)) {
-            return 0;
-        } else {
-            desmarcarTodos();
-            double peso[] = new double[n + 1];
-            for (int i = 0; i <= n; i++) {
-                peso[i] = Double.POSITIVE_INFINITY; //Integer.MAX_VALUE;
+    public String devolver_nombre_ciudad(int v) {
+        String ciudad = "";
+        int i = 0;
+        while (i < Ciudades.length) {
+            if (i == v) {
+                ciudad = Ciudades[i];
+                i = Ciudades.length;
             }
-            int x = posicion(a);
-            int y = posicion(z);
-            peso[x] = 0;
-            while (!isMarcado(y)) {
-                int u = VerticeNoMarcado();
-                marcar(u);
-                String s1 = Ciudades[u];
-                for (int i = 0; i < V[u].length(); i++) {
-                    String s = V[u].get(i);
-                    int w = posicion(s);
-                    if (!isMarcado(w)) {
-                        peso[w] = min(peso[w], peso[u] + distancia(s1, s));
+            i++;
+        }
+        return ciudad;
+    }
+
+    public String caminoMasCorto(String Origen, String Destino) {
+        int a = posicion(Origen);
+        int z = posicion(Destino);
+        return shortestPath(a, z);
+    }
+
+    private String shortestPath(int a, int z) {
+        float peso[] = new float[n + 1];
+        String caminos[] = new String[n + 1];
+        int pasos[] = new int[n + 1];
+
+        desmarcarTodos();
+        //Al inicio
+        for (int i = 0; i < peso.length; i++) {
+            peso[i] = Float.POSITIVE_INFINITY;
+            caminos[i] = "' '";
+            pasos[i] = -1;
+        }
+
+        peso[a] = 0;
+        caminos[a] = "";
+
+        while (!isMarcado(z)) {
+            int u = verticeMenorPeso(peso);
+            marcar(u);
+            for (int i = 0; i < V[u].length(); i++) {
+                String v = V[u].get(i);
+                String v2 = V[u].getCarretera2(i);
+                int w = posicion(v);
+                if (!isMarcado(w)) {
+                    if (peso[w] > peso[u] + distancia(u, w, v2)) {
+                        peso[w] = (float) (peso[u] + distancia(u, w, v2));
+                        caminos[w] = v2;
+                        pasos[w] = u;
                     }
                 }
             }
-
-            return peso[y];
         }
+        String Caminito = "";
+        if (peso[z] == Float.POSITIVE_INFINITY) {
+            peso[z] = 0;
+            Caminito = "No se encontro un camino para llegar al destino: ";
+        } else {
+            Caminito = mostrarCamino(caminos, pasos, a, z);
+            return Caminito + " " + "La Distancia es: " + peso[z];
+        }
+        return Caminito + peso[z];
+    }
+
+    private String mostrarCamino(String[] caminos, int[] pasos, int a, int z) {
+        int i = z;
+        String camino = "";
+        while (i != a) {
+            camino = caminos[i] + " , " + camino;
+            i = pasos[i];
+        }
+        return camino;
+        //System.out.println(camino);
+    }
+
+    private int verticeMenorPeso(float Peso[]) {
+        //ENCONTRAR UN V NO MARCADO
+        int v = 0;
+        for (int i = 0; i <= n; i++) {
+            if (!isMarcado(i)) {
+                v = i;
+            }
+        }
+
+        float men = Peso[v];
+        for (int i = 0; i < Peso.length; i++) {
+            if (!isMarcado(i) && Peso[i] < men) {
+                men = Peso[i];
+                v = i;
+            }
+        }
+        return v;
     }
 
 }

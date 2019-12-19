@@ -5,6 +5,7 @@ public class Nodo {     //Nodo que usa la class Lista
     public double distancia;
     public String camino;
     public Nodo Link;
+    public boolean estado;
 
     public Nodo(){
         this("", 0, "" );
@@ -15,6 +16,7 @@ public class Nodo {     //Nodo que usa la class Lista
         this.distancia = distancia;
         this.camino=camino;
         this.Link = null;
+        this.estado = true;
     }
 
     public String getCiudad() {
@@ -52,4 +54,13 @@ public class Nodo {     //Nodo que usa la class Lista
     double getPeso() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    public boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
+    }
+    
 }
