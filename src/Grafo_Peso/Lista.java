@@ -10,27 +10,49 @@ public class Lista {    //ADT Lista (Ordenada por Data y sin duplicados).
         n = 0;
     }
 
-    public void add(String ciudad, double distancia, String camino) { //Inserta data a la Lista.
-        Nodo Ant = null;
-        Nodo p = L;
-
-        while (p != null) {
-            Ant = p;
-            p = p.getLink();
-        }
-
-        Nodo nuevo;
-        if (Ant == null) {   //x es menor a todos los que están en la Lista (o L==null)
-            nuevo = new Nodo(ciudad, distancia, camino);
-            nuevo.setLink(L);
+ public void add(String ciudad, double distancia, String camino) { //Inserta data a la Lista.
+        if (L == null) {
+            Nodo nuevo= new Nodo(ciudad, distancia, camino);
             L = nuevo;
-            n++;
-        } else {    //x no está en la lista.  Insertarlo entre Ant y p
-            nuevo = new Nodo(ciudad, distancia, camino);
-            Ant.setLink(nuevo);
-            nuevo.setLink(p);
-            n++;
+            n = 1;
+        } else {
+            Nodo Ant = null;
+            Nodo p = L;
+
+            while (p != null && ciudad != p.getCiudad()) {
+                Ant = p;
+                p = p.getLink();
+            }
+            Nodo nuevo;
+            if (p != null) {
+                // Nodo nuevo;
+                if (Ant == null && distancia < p.getDistancia()) {   //x es menor a todos los que están en la Lista (o L==null)
+                    nuevo = new Nodo(ciudad, distancia, camino);
+                    nuevo.setLink(L);
+                    L = nuevo;
+                    n++;
+                } else { // if (!Ant.getCiudad().equals(ciudad)){    //x no está en la lista.  Insertarlo entre Ant y p
+
+                    while (p != null && distancia > p.getDistancia()) {
+                        Ant = p;
+                        p = p.getLink();
+                    }
+                    // Nodo nuevo;
+                    nuevo = new Nodo(ciudad, distancia, camino);
+                    Ant.setLink(nuevo);
+                    nuevo.setLink(p);
+                    n++;
+                }
+            } else {
+                //Nodo nuevo;
+                nuevo = new Nodo(ciudad, distancia, camino);
+                Ant.setLink(nuevo);
+                nuevo.setLink(p);
+                n++;
+            }
+
         }
+
     }
 
     public void del(String ciudad) {     //Elimina el nodo con Data=data, si existe.

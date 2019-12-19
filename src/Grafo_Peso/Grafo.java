@@ -363,4 +363,40 @@ public class Grafo {    //Grafo dirigido y con peso
         return v;
     }
 
+    public double menordistancia(String a, String z) {
+        if (!existeCamino(a, z)) {
+            return 0;
+        } else {
+            desmarcarTodos();
+            double peso[] = new double[n + 1];
+            for (int i = 0; i <= n; i++) {
+                peso[i] = Double.POSITIVE_INFINITY; //Integer.MAX_VALUE;
+            }
+            int x = posicion(a);
+            int y = posicion(z);
+            peso[x] = 0;
+            while (!isMarcado(y)) {
+                int u = VerticeNoMarcado();
+                marcar(u);
+                String s1 = Ciudades[u];
+                for (int i = 0; i < V[u].length(); i++) {
+                    String s = V[u].get(i);
+                    int w = posicion(s);
+                    if (!isMarcado(w)) {
+                        peso[w] = min(peso[w], peso[u] + distancia(s1, s));
+                    }
+                }
+            }
+
+            return peso[y];
+        }
+    }
+    public double distancia(String a, String b) {
+        int x = posicion(a);
+        int y = posicion(b);
+        if (!isVerticeValido(x) || !isVerticeValido(y)) {
+            return 0;
+        }
+        return V[x].getDistancia(b);
+    }
 }
